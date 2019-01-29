@@ -1,0 +1,62 @@
+---
+title: "Lei_Zhuo_STAT425_HW3"
+author: "Zhuo Feng Lei (zlei5)"
+date: "1/22/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+mydata = read.csv("shotputt_powerclean.csv")
+lm(shot.putt~power.clean,data = mydata)
+cor(mydata$power.clean,mydata$shot.putt)
+```
+When the best pre-season 1 rep power clean lift is 0kg, the person is predicted to get 5.95963 meters for his personal best shot. As best pre-season 1 rep power clean increase by 1 unit, the personal best shot put in meters is predicted to also increase by .09834 meters. There is a strong positive correlation between best pre-season 1 rep power clean life and personal best shot put. 
+
+```{r}
+plot(mydata$power.clean,mydata$shot.putt,xlab = "Best pre-season 1 rep power clean lift in kg",ylab = "Personal best shot put in meters")
+abline(lm(shot.putt~power.clean,data = mydata))
+```
+
+## Question 2 
+```{r}
+fit = lm(shot.putt~I(power.clean-100),data = mydata)
+fit
+```
+When the best pre-season 1 rep power clean lift is 100 kg, the predicted personal best shot put is 15.79401 meters. As best pre-season 1 rep power clean lift increases by 1 unit, the personal best shot put is predicted to increase by .09834 meters.
+We prefer to intepret the estimates from the centered model because power clean lifting 0 kg doesn't make sense unless that person has no hands. 
+
+## Question 3 
+```{r}
+predict(fit,data.frame(power.clean=90))
+predict(fit,data.frame(power.clean=110))
+```
+The predicted shot put for an athlete who power cleans 90kg is 14.81057 meters.The predicted shot put
+for athletes that power clean 110kg is 16.77745 meters.
+
+## Question 4 
+```{r}
+nfl_data = read.csv("nfl_combine2017.csv")
+```
+
+```{r}
+fit2 = lm(BenchPress~I(ArmLength-32),nfl_data)
+fit2
+```
+When the arm length is 32 inches, the person is predicted to have 18.197 bench press repetitions.. As the arm length increases by 1 unit, the predicted bench press is predicted to also increase by 1.522 repetitions.
+
+```{r}
+plot(nfl_data$ArmLength,nfl_data$BenchPress,xlab = "Arm Length(Inches)",ylab = "Number of Bench Press Repetitions")
+abline(lm(BenchPress~ArmLength,nfl_data))
+```
+
+## Question 5 
+```{r}
+predict(fit2,data.frame(ArmLength=30))
+```
+Atheletes with an arm length of 30 inches is predicted to have 15.15323 bench press repetitions. Based on the plot, there are many points spread out far away from the linear regression line, resulting in large residuals. This indicates that the chance of error is high and linear approximation is not adequate in this context. 
+

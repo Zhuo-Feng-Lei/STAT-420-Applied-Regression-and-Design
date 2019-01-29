@@ -1,0 +1,60 @@
+---
+title: "Lei_Zhuo_STAT425_HW4"
+author: "Zhuo Feng Lei (zlei5)"
+date: "1/26/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+winner.url = "http://www.stat.ufl.edu/~winner/data/"
+tmp.url = paste0(winner.url, "cruise_ship.dat")
+st = c(1,21,41,49,57,65,73,81,89)
+en = c(20,40,48,56,64,72,80,88,97)
+wds = diff(c(st, en[length(en)]))
+cship = read.fwf(tmp.url, widths = wds, strip.white = T)
+colnames(cship)=c("ShipName","CruiseLine","Age","Tonnage","passengers", "Length","Cabins","pdensity","crew")
+```
+
+```{r}
+#design matrix
+X = as.matrix(cbind(intercept=1,cship[,c(3,4,6)]))
+y = as.matrix(cbind(cship[,5]))
+#Compute X'X
+t(X)%*%X
+```
+```{r}
+#compute X'y
+t(X)%*%y
+```
+
+## Question 2 
+```{r}
+beta_hat = solve(t(X)%*%X)%*%t(X)%*%y
+beta_hat
+```
+
+## Question 3 
+```{r}
+fit = lm(passengers~Age+Tonnage+Length,data = cship)
+fit
+```
+When the age, tonnage, and length of the ship is 0, there is -350.97 passengers on the cruise ship (doesn't make sense since model is uncentered). As age increases by one unit, the number of passengers on the cruise ship increases by 11.27. As tonnage increases by one unit, the number of passengers on the ship increases by 24.45. As length increases by one unit, the number of passengers increases by 34.06. (Passenger variable is given in (100s))
+## Question 4 
+```{r}
+mean(X%*%beta_hat)
+```
+The predicted number of passengers for the average ship is 1845.741 passengers.
+
+## Question 5
+```{r}
+residuals = cship$passengers -(X%*%beta_hat)
+which.max(abs(residuals))
+cship[49,]
+```
+
+The Queen Mary 2 cruise ship deviates the most from the predicted values.

@@ -1,0 +1,48 @@
+---
+title: "STAT 425 HW 1"
+author: "Zhuo Feng Lei (zlei5)"
+date: "1/16/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+```
+
+```{r}
+winner.url = "http://www.stat.ufl.edu/~winner/data/"
+tmp.url = paste0(winner.url, "cruise_ship.dat")
+st = c(1,21,41,49,57,65,73,81,89)
+en = c(20,40,48,56,64,72,80,88,97)
+wds = diff(c(st, en[length(en)]))
+cship = read.fwf(tmp.url, widths = wds, strip.white = T)
+colnames(cship)=c("ShipName","CruiseLine","Age","Tonnage","passengers", "Length","Cabins","pdensity","crew")
+```
+
+## Question 1 
+```{r}
+summary(cship$passengers)
+summary(cship$crew)
+```
+
+  On average, there is 1846 passengers on a cruise ship. The least amount of passengers on a cruise ship is 66. The largest number of passengers on a cruiseship is 5400.
+  On average, there is 779.4 crew members on a cruise ship. The least amount of crew members on a cruise ship is 59 crew members. The largest number of crew members on a cruiseship is 2100. 
+
+## Question 2
+```{r}
+ggplot(cship) + geom_point(aes(passengers,crew)) + xlab("Number of Passengers on a Cruise Ship (100s)") + ylab("Number of Crew Members on a Cruise Ship (100s)")
+```
+As the numbers of passengers on a cruise ship increase, the number of crew members on the cruise ship also increases.
+
+## Question 3
+```{r}
+correlation = cor(cship$passengers,cship$crew)
+```
+The correlation between passengers and crew members on a cruiseship is `r correlation`. 
+
+## Question 4
+$y_i=\beta_0+\beta_1 x_i+\beta_2x_i^2+e_i$ 
+
+## Question 5 
+$y_i=\beta_1+2\beta_2x_i$
