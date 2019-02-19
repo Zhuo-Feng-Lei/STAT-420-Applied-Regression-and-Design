@@ -1,0 +1,88 @@
+---
+title: "Lei_Zhuo_Stat425_Hw6"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/1/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+```{r}
+data = read.csv("hybrid_reg.csv")
+fit1 = lm(msrp~mpgmpge+accelrate,data = data)
+summary(fit1)
+```
+When mpgmpge and accelrate is 0 units, the msrp is -$12309.88 in 2013 (makes no sense since model is uncentered). As mpgmpge increases by one unit, the msrp decreases by $131.48. As accelrate increases by 1 unit, the msrp increases by $4720.14. 
+
+The R^2 value is .4945. This indicates that the model are only able to explain some of the variability of the response data around its mean. A model with only mpgmpge and accelrate only accounts for 49.45% of the variance in msrp.
+
+## Question 2 
+```{r}
+TSS = sum((data$msrp - mean(data$msrp))^2)
+TSS
+```
+```{r}
+RSS = sum(fit1$residuals^2)
+RSS
+```
+
+```{r}
+MSS = TSS-RSS
+MSS
+```
+
+## Question 3 
+```{r}
+control = lm(msrp~mpgmpge,data = data)
+summary(control)
+summary(fit1)$r.squared - summary(control)$r.squared
+```
+
+After controlling mpgmpge, accelrate accounts for 35.6% of the variance of msrp.
+
+## Question 4
+```{r}
+data2 = read.csv("hotel_energy.csv")
+fit2 = lm(enrgcons~area+age+numrooms+occrate,data = data2)
+summary(fit2)
+```
+When area,age,number of rooms, and occrate is 0, then the energy consumption in kilowatt-hours is -4.692e+06 (this does not make sense due to the model being uncentered. A hotel cannot have 0 area, number of rooms,etc). As area increases by one unit, the amount of energy consumption increases by 2.071e+02 killowatt-hours. As the age of the hotel increases by one unit, the response variable increases by 1.562e+04. As the number of rooms increases by one unit, the amount of energy consumption decreases by 7.226e+03 kilowatt-hours. As the occrate increases by one unit, the response variables increases by 7.367e+06. 
+
+R^2 is .8391. This means a model with area,age,number of rooms, and occrate accounts for ~84% of the variance in energy consumption.
+
+## Question 5
+```{r}
+#area
+control1 = lm(enrgcons~age+numrooms+occrate,data = data2)
+#age
+control2 = lm(enrgcons~area+numrooms+occrate,data = data2)
+#numrooms
+control3 = lm(enrgcons~area+age+occrate,data = data2)
+#occrate
+control4 = lm(enrgcons~area+age+numrooms,data = data2)
+```
+
+```{r}
+summary(fit2)$r.squared - summary(control1)$r.squared
+```
+After controlling the other 3 variables, area account for 34.77% of the variance in energy consumption.
+
+```{r}
+summary(fit2)$r.squared - summary(control2)$r.squared
+```
+After controlling the other 3 variables, age account for ~0% of the variance in energy consumption.
+
+```{r}
+summary(fit2)$r.squared - summary(control3)$r.squared
+```
+After controlling the other 3 variables, the number of rooms account for 1.65% of the variance in energy consumption.
+
+```{r}
+summary(fit2)$r.squared - summary(control4)$r.squared
+```
+After controlling the other 3 variables, occrate account for 4.17% of the variance in energy consumption.
+
+The predictor that accounts for the most variance in energy consumption after controlling the other 3 variables is area.

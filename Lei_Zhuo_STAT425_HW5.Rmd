@@ -1,0 +1,64 @@
+---
+title: "Lei_Zhuo_STAT425_HW5"
+author: "Zhuo Feng Lei (zlei5)"
+date: "1/28/2019"
+output: pdf_document
+---
+
+## Question 1 
+
+$$var(X^T_*\hat{\beta}) = X^T_*var(\hat{\beta})X_{*}$$
+
+$$ = X^T_{*}(\sigma^2(X^TX)^{-1}X_*)$$
+
+## Question 2
+
+$$\hat{y} = X\hat{B} = X(X^TX)^{-1}X^TY = HY$$
+
+$$var(\hat{y}) = H\sigma^2IH^T$$
+
+$$ = H\sigma^2IH$$
+
+$$ = \sigma^2H = \sigma^2X(X^TX)^{-1}X^T$$
+
+## Question 3 
+
+$$\hat{\epsilon} = Iy-X\hat{\beta}$$
+
+$$ = X(X^TX)^{-1}X^Ty$$
+
+$$ = y(I-X)(X^TX)^{-1}X^T$$
+
+$$ = (XB+\epsilon)(I-X(X^TX)^{-1}X^T)$$
+
+$$ = (I-X(X^TX)^{-1}X^T)\epsilon$$
+
+## Question 4
+
+$$HH = (X(X^TX)^{-1}X^T)(X(X^TX)^{-1}X^T)$$
+     
+$$ = X(X^TX)^{-1}(X^TX)(X^TX)^{-1}X^T$$
+    
+$$ = X(X^TX)^{-1}X^T$$
+     
+$$= H$$
+
+$$H^T = [X(X^TX)^{-1}X^T]^{-1}$$
+      
+$$ = X[(X^TX)^{-1}]^TX^T$$
+      
+$$ = H$$
+      
+## Question 5
+
+$$var(\epsilon) = \sigma^2I$$
+
+$$\hat{\epsilon} = (I-H)\epsilon$$
+
+$$var(\hat{\epsilon}) = \sigma^2(I-H)\sigma^2I(I-H)^T$$
+
+$$= (I-H)\sigma^2I(I-H)$$
+
+$$= \sigma^2(I-H)$$
+
+$$var(\hat{\epsilon}) = \sigma^2(I-X(X^TX)^{-1}X^T)$$

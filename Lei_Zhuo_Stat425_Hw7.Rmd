@@ -1,0 +1,47 @@
+---
+title: "Lei_Zhuo_Stat425_HW7"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/4/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+
+The Gauss-Markov Theorem assums that a linear model is true, $y = X\beta+\epsilon$. It also assumes that $E(\epsilon)=0$ and $var(\epsilon) = \sigma^2I$.
+
+## Question 2 
+
+$\hat{\beta}$ is unbiased when $E(\hat{\beta})=\beta$. 
+
+Under Gauss-Markov Theorem:
+$E(\hat{\beta})=E((X^TX)^{-1}X^Ty)$
+
+$E(\hat{\beta})=E(X^TX)^{-1}X^TX\beta+\epsilon$
+
+$E(\epsilon)=0$. Thus, $E(\hat{\beta})=(X^TX)^{-1}X^TX\beta$
+
+$(X^TX)^{-1}X^TX$ is an identity matrix. Thus, $E(\hat{\beta})=\beta$.
+
+## Question 3 
+
+$$E(\hat{y})=XE(\hat{\beta})+\hat{\epsilon}$$
+
+Based on the answer in the previous question and Gauss-Markov Theorem assumption ($E(\epsilon)=0$), $E(\hat{y})= XB$. Therefore, $\hat{y}$ is an unbiased estimator of E(y).
+
+## Question 4 
+
+$$E(b_1)=\frac{E(y_2)-E(y_1)}{x_2-x_1}$$
+
+$$ = \frac{(\beta_0+\beta_1x_2)-(\beta_0+\beta_1x_2)}{x_2-x_1} = \beta_1$$
+
+## Question 5
+
+$$var(\beta_1) = var(\frac{\beta_1(x_2-x_1)}{x_2-x_1})+var(\frac{\epsilon_2-\epsilon_1}{x_2-x_1})$$
+
+$$var(\beta_1) = var(\frac{e_2-e_1}{(x_2-x_1)^2}) = \frac{var(\epsilon_2)+var(\epsilon_1)}{(x_2-x_1)^2}$$
+
+$$var(\beta_1) = \frac{\sigma^2+\sigma^2}{(x_2-x_1)^2} = \frac{2\sigma^2}{(x_2-x_1)^2}$$
