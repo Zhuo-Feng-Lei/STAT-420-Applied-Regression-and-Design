@@ -1,0 +1,52 @@
+---
+title: "Lei_Zhuo_Stat425_HW9"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/8/2019"
+output: pdf_document
+---
+```{r}
+library(magick)
+```
+
+## Question 1 
+```{r}
+data = read.csv("hybrid_reg.csv")
+fit = lm(msrp~mpgmpge+accelrate,data = data)
+confint(fit)
+```
+
+We are 95% confident that $\beta_{mpgmpge}$ falls between -277.3895 and 14.43946 and $\beta_{accelrate}$ falls between 3828.8331 and 5651.44832. 
+
+## Question 2 
+```{r}
+predict(fit,data.frame(mpgmpge=40,accelrate=10),interval = "confidence",level = .99)
+```
+When mpgmpge is 40 units and accelrate is 10 units, we are 99% confident that the true value of the population mean falls between 25890.53 and 33774.53 units.
+
+```{r}
+xstar = data.frame(1,mpgmpge=40,accelrate=10)
+predict(fit,xstar,interval = "prediction",level = .99)
+```
+When mpgmpge is 40 units and accelrate is 10 units, we are 99% confident that new data would fall between -10360.25 and 70025.3 units.
+
+## Question 3 
+```{r}
+test = coef(summary(fit))
+tval = (test[3,1]-4500)/test[3,2]
+pt(tval,fit$df.residual,lower=F)
+```
+Since the p-value is greater than 0.05, we do not reject the null hypothesis. There is sufficient evidence to suggest that $\beta_{accelrate}$ is 4500 units or greater.
+
+## Question 4 
+```{r}
+reduced_fit_4 = lm(msrp~1,data = data,offset = 4500*accelrate-120*mpgmpge)
+anova(reduced_fit_4,fit)
+```
+The p-value is .8076. Since the p-valule is greater than alpha, we do not reject our null hypothesis. There is sufficient evidence to suggest that $\beta_{accelrate}$ is 4500 units and $\beta_{mpgmpge} is -120 units.$
+
+## Question 5
+```{r}
+pic = image_read("1.jpg")
+image_rotate(pic,-90)
+```
+

@@ -1,0 +1,96 @@
+---
+title: "Lei_Zhuo_STAT425_HW12"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/15/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+```{r}
+data1 = read.csv("nbaodds201415.csv")
+fit1 = lm(TeamDiff~TeamSprd,data=data1)
+par(mfrow=c(2,2))
+plot(fit1,add.smooth=FALSE)
+```
+There are no problems with linearity and contance variance assumptions since the residuals vs fitted plot is roughly flat with equal vertical spread.
+
+The distribution of errors also have normality since the points on the normal qq plot shows a straight line. 
+
+Scale-location plot also shows a roughly flat trend so there should be no problems with the variance. 
+
+You cannot see the contour lines are the residuals vs leverage plot, therefore there are no outliers with high influence but there are some points with high leverage.
+
+Since all the assumptions are met, it indicates that the model is a pretty good fit.
+
+## Question 2 
+```{r}
+data2 = read.csv("ship_speed_fuel.csv")
+fit2 = lm(fuel~speed,data=data2)
+par(mfrow=c(2,2))
+plot(fit2,add.smooth=FALSE)
+```
+
+There are problems with linearity and constant variance assumption based on the residuals vs fitted values plot. There is a parabolic trend which indicates that the conditions of linearity and constant variance assumption is not met.
+
+The points on the normal qq plot also does not fall in a straight line. This indicates that the distribution of errors does not have normality. 
+
+The scale-location plot does not show a roughly flat trend. This aligns with the interpretation of the residuals vs fitted plot as there are problems with the constantance of the variance assumption.
+
+For the residuals vs leverage plot, there are no outliers according to cook's distance as the contour lines are not visible on the plot. However, there are some points with high leverage.
+
+Based on the result of the four plots, the model doesn't seem to fit very well.
+
+## Question 3 
+```{r}
+data3 = read.csv("asylumdistance.csv")
+fit3 = lm(adm_rate~distance,data=data3)
+par(mfrow=c(2,2))
+plot(fit3,add.smooth=FALSE)
+```
+The points on the residuals vs fitted plot shows a somewhat flat trend. This indicates that linearity and  constant variance assumption is not violated.
+
+Most points on the normal qq plot seems to fall on a straight line. The distribution of errors seems to be a bit skewed, but it still appears to be pretty normal.
+
+Scale location plot also shows a roughly flat trend. This indicates that the constant variance assumption haven't been violated greatly. There seems to be a tiny bit of problem with variance which may be caused by outliers.
+
+According the residuals vs leverage plot, we see that one point falls inside the contour lines for cook's distance. This indicates that there are outliers in our data and points with high leverage.
+
+Our model fits decently well, and the model could be improved by removing the outliers.
+
+## Question 4 
+```{r}
+data4 = read.csv("lpga2009.csv")
+fit4 = lm(prize~percentile,data=data4)
+par(mfrow=c(2,2))
+plot(fit4,add.smooth=FALSE)
+```
+The residuals vs fitted plot shows a roughly parabolic trend. This indicates that there is no linearity and constant variance.
+
+Most points on the normal qq plot seems to fall in a straight line. For the most part, the distribution of errors has normality.
+
+The scale location plot doesn't seem to show a trend that is roughly flat. This indicates that there are some problems with the variance. 
+
+Based on the residuals vs leverage plot, we can  see that some points have high leverage. Also the contour line for cook's distance is a tiny bit visible. This indicates that there are a few points with decently high influence. However, none of the points are past the contour lines so we do not have any outliers.
+
+Based on the results of the diagnostic plot, there are problems with variance and linearity. Thus, our model doesn't seem to fit very well.
+
+
+## Question 5
+```{r}
+fit5 = lm(ln.prize.~percentile,data=data4)
+par(mfrow=c(2,2))
+plot(fit5,add.smooth=FALSE)
+```
+The residuals vs fitted plotshows a roughly flat trend. This indicates that there is linearity and the constant variance assumption is not violated.
+
+The points on the normal qq plot also falls on a straigh line. This indicates that the distribution of errors have normality.
+
+Scale location plot also shows a roughly flat trend. This indicates that we have no problems with variance.
+
+On the residuals vs leverage plot, we do not see the contour lines for  the cook's distance which means that there are no outliers. However, there are a couple points with high leverage.
+
+Overall, it seems that there are no problems and that the model fits pretty well after transformation of the variables. 

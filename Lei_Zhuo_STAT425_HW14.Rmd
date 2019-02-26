@@ -1,0 +1,58 @@
+---
+title: "Lei_Zhuo_STAT425_HW14"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/20/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(alr4)
+library(MASS)
+```
+
+## Question 1 
+$$W_\lambda = (X^TX+\lambda I_{pp})^{-1}X^TX$$
+
+$$var(\hat{\beta}(\lambda)) = var(W_\lambda\hat{\beta}) = W_\lambda var(W^T_\lambda)$$
+$$ = \sigma^2W_\lambda(X^TX)^{-1}W^T_\lambda$$
+$$ = \sigma^2(X^TX+\lambda I)^{-1}X^TX(X^TX+\lambda I )^{-1}$$
+
+## Question 2 
+$$var(\hat{y_r}) = var(X\hat{\beta_r})$$
+$$ = Xvar(\hat{\beta_r})X^T$$ *Using results from #1, we get:
+$$X\sigma^2(X^TX+\lambda I)(X^TX)(X^TX+\lambda I)^{-1}X^T$$
+
+## Question 3 
+$$E(\hat{\epsilon_r}) = E(y)-E(\hat{y_r}) = X\beta-XE(\hat{\beta_r})$$
+$$ = X\beta-X(X^TX+\lambda I)^{-1}X^TXB = X\beta[I-X(X^TX+\lambda I)^{-1}X^T]$$
+
+## Question 4
+```{r}
+data(MinnWater)
+apply(MinnWater,2,mean)
+apply(MinnWater,2,sd)
+mw_st = as.data.frame(scale(MinnWater))
+apply(mw_st,2,mean)
+apply(mw_st,2,sd)
+rr = lm.ridge(muniUse~.,data=mw_st,lambda=seq(0,0.1,0.001))
+select(rr)
+```
+
+## Question 5 
+```{r}
+#Ordinary Least Squares Standard Error
+fit1 = lm(muniUse~.,data = mw_st)
+summary(fit1)
+X = as.matrix(mw_st[,-3])
+ols_se = sqrt(diag(sigma(fit1)^2*solve(t(X)%*%X)))
+ols_se
+```
+
+```{r}
+#Ridge Regression Standard Error
+lambda = diag(rep(.004,7),7,7)
+r_se = sqrt(diag(.0619^2*solve((t(X)%*%X+lambda))%*%t(X)%*%X%*%solve((t(X)%*%X+lambda))))
+r_se
+```
+

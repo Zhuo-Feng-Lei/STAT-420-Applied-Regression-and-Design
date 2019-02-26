@@ -1,0 +1,29 @@
+---
+title: "Lei_Zhuo_Stat425_HW8"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/6/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+```{r}
+data = read.csv("hotel_energy.csv")
+fit = lm(enrgcons~area+age+numrooms+occrate,data = data)
+summary(fit)
+```
+Since the p-value is less than .05, we do not reject the null hypothesis that $\beta_{area} = \beta_{age} = \beta_{numrooms} = \beta_{occrate} = 0$
+
+## Question 2 
+```{r}
+reduce_fit = lm(enrgcons~area+age,data = data)
+anova(reduce_fit,fit)
+```
+Since the p-value is .1339 and is greater than .05, we reject the null hypothesis. The variables area and age of the hotel do contribute something to the model. 
+
+## Question 3 
+$$\frac{x_1^{\frac{d_1}{2}-1}e^{\frac{-x_1}{2}}}{2^{\frac{d_1}{2}\Gamma\frac{d_1}{2}}} * \frac{x_2^{\frac{d_2}{2}-1}e^{\frac{-x_2}{2}}}{2^{\frac{d_2}{2}\Gamma\frac{d_2}{2}}} = \frac{x_1^{\frac{d_1}{2}-1}x_2^{\frac{d_2}{2}-1}e^{\frac{-x_1-x_2}{2}}}{2^{\frac{d_1+d_2}{2}}\Gamma\frac{d_1}{2}\Gamma\frac{d_2}{2}}$$
+

@@ -1,0 +1,69 @@
+---
+title: "Lei_Zhuo_STAT425_HW13"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/18/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(faraway)
+library(alr4)
+```
+
+## Question 1
+```{r}
+url = "http://users.stat.ufl.edu/~winner/data/scottish_recycle.dat"
+start = c(1,27,35,49,51)
+end = c(25,33,49,41,57)
+width =diff(c(start, end[length(end)]))
+data1 = read.fwf(url,widths=width,strip.white=T)
+data1
+colnames(data1)=c("Local_Authority","Recycling_Capacity","Residual_Capacity","Number_of_extended_materials_collected","Yield")
+fit1 = lm(Yield~Recycling_Capacity+Number_of_extended_materials_collected+Residual_Capacity,data = data1)
+vif(fit1)
+```
+All the VIFs has a value less than 10, therefore there are no severe colinearity problems.
+
+## Question 2
+```{r}
+data2 = read.csv("hotel_energy.csv")
+fit2 = lm(enrgcons~area+age+numrooms+occrate,data = data2)
+vif(fit2)
+```
+All the VIFs has a value less than 10, therefore there are no severe colinearity problems.
+
+## Question 3
+```{r}
+winner.url = "http://www.stat.ufl.edu/~winner/data/"
+tmp.url = paste0(winner.url, "cruise_ship.dat")
+st = c(1,21,41,49,57,65,73,81,89)
+en = c(20,40,48,56,64,72,80,88,97)
+wds = diff(c(st, en[length(en)]))
+cship = read.fwf(tmp.url, widths = wds, strip.white = T)
+colnames(cship)=c("ShipName","CruiseLine","Age","Tonnage","passengers", "Length","Cabins","pdensity","crew")
+fit3 = lm(passengers~Age+Tonnage+Length,data = cship)
+vif(fit3)
+```
+All the VIFs has a value less than 10, therefore there are no severe colinearity problems.
+
+## Question 4 
+```{r}
+data(MinnWater)
+fit4 = lm(muniUse~.,data = MinnWater)
+vif(fit4)
+```
+There is a severe case of colinearity in this model. The variables "year","allUse","irrUse","statePop","muniPop" all have VIFS that indicate a colinearity problem.
+
+The variance in the muniPop slope is approximately 3441.37710 times larger in the full model relative to the model with just muniPop.
+
+## Question 5
+$$VIF_1 = \frac{1}{1-R^2_1}$$
+
+$$11.2*(1-R^2_1) = 1$$
+
+$$-11.2R^2_1 = -10.2$$
+
+$$R^2_1 = \frac{-10.2}{11.2} = .91071429$$
+
+The share of variance accounted for in $X_1$ by $X_2,...,x_5$ is approximately 91%. In general, multicolinearity impact inferences by inflating the variance of $\beta_j$. A high variance makes the confidence interval for beta wider. Thus, itwould be easier to conclude that $\beta_j=0$  which may give us the inaccurate results when determining whether its 0 or not equal to 0.

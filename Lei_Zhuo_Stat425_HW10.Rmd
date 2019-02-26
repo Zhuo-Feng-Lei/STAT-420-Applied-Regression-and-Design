@@ -1,0 +1,61 @@
+---
+title: "Lei_Zhuo_STAT425_HW10"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/11/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+```{r}
+data = read.csv("hybrid_reg.csv")
+fit = lm(msrp~mpgmpge+accelrate,data = data)
+leverage = hat(model.matrix(fit))
+which.max(leverage)
+data[151,]
+```
+Observation 151 (C-Max Energi Plug-in with msrp=32950, accelrate = 11.76 and mpgmpge=100) has the highest leverage. 
+
+```{r}
+data[which.max(fit$residuals),]
+```
+The Cadillac Escalade has the highest studentized residual with msrp=78932.81, accelrate=9.09, and mpgmpge = 22.35.
+
+```{r}
+st_res = rstudent(fit)
+data[which.max(st_res),]
+```
+
+The Cadillac Escalade has the highest studentized residual with msrp=78932.81, accelrate=9.09, and mpgmpge = 22.35.
+
+## Question 2 
+```{r}
+plot(st_res,fit$residuals)
+```
+The graph is not in a straight line because the studentized residuals depends on $\sqrt{1-h_{ii}}$. In order for it to be in a straight line, the denominator needs to be a constant. Since the points have different leverage, th estudentized residuals will be different from the least squares residuals.
+
+## Question 3 
+We know that $H = X(X^TX)^{-1}X^T$. Using the cyclic property of trace, we get $tr((X^TX)^{-1}X^TX)$. Because $(X^TX)^{-1}$ is inverse of $X^TX$, we get $tr(I_{pxp})$ where I is the identity matrix. $tr(I_{pxp}) = Rank X = p'$
+
+## Question 4 
+$var(\epsilon)=E(\epsilon^2)-E(\epsilon)^2$ We know that $E(\epsilon)^2=0$ thus we have $var(\epsilon)=E(\epsilon^2)-0$. We know from lecture that $var(\epsilon) = \sigma^2(I-H)$. Thus, $E(\epsilon^2)=\sigma^2(I-H)$.
+
+## Question 5
+Estimator is unbiased if $E(\hat{\sigma^2})=\sigma^2$. 
+
+$$E(\hat{\sigma^2})=\frac{E(SSE)}{n-p'}$$
+
+$$ = \frac{\sum{E(\hat{\epsilon^2})}}{n-p'}$$
+
+$$ = \frac{\sum{\sigma^2(1-h_{ii})}}{n-p'}$$
+
+$$ = \frac{\sum{\sigma^2}-\sigma^2\sum{h_{ii}}}{n-p'}$$
+
+$$ = \frac{n\sigma^2-\sigma^2\sum{h_{ii}}}{n-p'}$$
+
+$$ = \frac{\sigma^2(n-\sum{h_{ii}})}{n-p'} = \frac{\sigma^2(n-tr(H))}{n-p'}$$
+
+$$ = \frac{\sigma^2(n-p')}{n-p'} = \sigma^2$$. Thus, it is an unbiased estimator.

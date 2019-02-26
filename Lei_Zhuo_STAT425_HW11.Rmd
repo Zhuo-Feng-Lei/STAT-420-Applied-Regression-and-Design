@@ -1,0 +1,51 @@
+---
+title: "Lei_Zhuo_STAT425_HW11"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/13/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(alr4)
+```
+
+## Question 1 
+```{r}
+data(fuel2001,package="alr4")
+fit = lm(FuelC~Tax+Drivers+Income,data = fuel2001)
+rstudent(fit)
+```
+
+## Question 2
+```{r}
+#Without Bonferroni adjustment
+critval = qt(.05/(2),df = df.residual(fit)-1,lower = FALSE)
+which(abs(rstudent(fit))>critval)
+```
+Florida, New York, and Texas are outliers.
+
+```{r}
+#Bonferroni adjustment
+critval = qt(.05/(2*nobs(fit)),df = df.residual(fit)-1,lower = FALSE)
+which(abs(rstudent(fit))>critval)
+```
+New York and Texas are identitifed as outliers.
+
+## Question 3 
+```{r}
+which(cooks.distance(fit)>=1)
+```
+Cook's distance is used to measure the influence of a point. A point is an outlier if the cook's distance for that point is equal to or greater than 1. In this case, we have no outliers according to cook's distance. 
+
+## Question 4
+We know two things: $H = X(X^TX)^{-1}X^T$ and that when a matrix is multipled by its inverse, we get an identity matrix.
+
+$HX = X(X^TX)^{-1}X^TX = XI$ since $(X^TX)^{-1}X^TX=I$. Thus, $HX=XI = X$ since multiplying by identity matrix is the same as multiplying by one.
+
+$X^TH = X^TX(X^TX)^{-1}X^T = IX^T = X^T$ using the same logic as above.
+
+## Question 5 
+
+![](/cloud/project/hi.jpg)
+
