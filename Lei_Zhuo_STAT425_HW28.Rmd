@@ -1,0 +1,131 @@
+---
+title: "Lei_Zhuo_Stat425_HW28"
+author: "Zhuo Feng Lei (zlei5)"
+date: "4/9/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(faraway)
+library(MASS)
+library(car)
+library(leaps)
+library(glmnet)
+```
+
+## Question 1: Introduction
+
+The dataset was created by the National Institute of Diabetes and Digestive and Kidney Diseases. The dataset contains observations from a study on 768 adult female Pima Indians living near Phoenix. Several constraints were placed on the selection of these instances from a larger database. In particular, all patients here are females at least 21 years old of Pima Indian heritage. The objective of the dataset is to diagnostically predict whether or not a patient has diabetes, based on certain diagnostic measurements included in the dataset. 
+
+The dataset contains 9 variables. The variable we are trying to predict is glucose, the plasma glucose concentration at 2 hours in an oral glucose tolerance test. The variables we will be testing for significance is pregnant (# of times pregnant), diastolic (blood pressure), triceps (skin fold thickness), insulin (2-hour serum insulin),age, and bmi (body mass index).
+
+## Question 2: The Data
+
+Upon closer inspection, I noticed that the pima dataset is incomplete nor logically make sense. For example, some observations have 0 insulin, bmi, tricepts, diastolic and glucose. It is impossible to have 0 blood pressure, insulin, glucose, skinfold, or body mass unless the person is dead and we know that the study was conducted on people that were still alive at the time. As a result, I decided to remove the rows with incomplete values and unexpected outliers. This is because I plan on using machine learning methods to find the best model and I do not want the incomplete observations to send the wrong signal.
+```{r}
+data(pima)
+pima = pima[,-9]
+pima = pima[which(pima$bmi!=0 & pima$insulin!=0 & pima$diastolic!=0 & pima$glucose!=0 & pima$triceps!=0),]
+summary(pima)
+```
+
+```{r}
+full_mod = lm(glucose~.,data=pima)
+critval = qt(0.05/(2*nobs(full_mod)), df=df.residual(full_mod)-1, lower=FALSE)
+which(abs(rstudent(full_mod)) > critval)
+```
+After taking care of the unexpected outliers/ incomplete values, I wanted to check if there were any outliers left in the dataset. I decided to use bonferroni's critical value to check for outliers. No outliers were found using this method.
+```{r}
+cooks_d = cooks.distance(full_mod)
+which(abs(cooks_d)>=1)
+```
+I also want to check for observations with high leverage or influence. Therefore, I used cook's distance to search for highly influential observations. Using this method, I did not find any influential points.
+
+## Question 3: Methods
+
+```{r}
+set.seed(425)
+index = sample(1:392, 392/2)
+training = pima[index,]
+test = pima[-index,]
+
+x = model.matrix(glucose~.-1, data=training)
+y = training$glucose
+test_x = model.matrix(glucose~.-1, data=test)
+test_y = test$glucose
+bestmods = leaps(x,y,nbest=1, method = "Cp")
+colnames(x)[bestmods$which[which.min(bestmods$Cp),]]
+```
+I start off by splitting the dataset into training and testing datasets. I used an exhaustive search to find the subset with optimal Cp. The search told us that pregnant, insulin, bmi, and age were the best model in predicting glucouse.
+```{r}
+fit_cp = lm(glucose~pregnant+insulin+bmi+age,data=training)
+```
+
+```{r}
+bestmods_r = leaps(x, y, nbest=1, method = "adjr2")
+colnames(x)[bestmods_r$which[which.max(bestmods_r$adjr2),]]
+```
+Next, I used an exhaustive search using the adjusted R-squared criterion. It returned the same model as the exhaustive search with optimal Cp. 
+```{r}
+#stepwise selection method
+full_mod = lm(glucose~.,data=training)
+step_mod = stepAIC(full_mod,direction="both",trace=F)
+step_mod
+```
+Next, I used stepwise selection to find the best model. It returned the same models as previous methods. I also proceede to fit a ridge regression and lasso model. After I have all the optimal models from the different methods, I proceede to calculate the mean square error of every model. We want the model with the lowest MSE because it predicts glucose better.
+
+```{r}
+ridgemod = glmnet(x,y, alpha = 0)
+ridge_cv.out = cv.glmnet(x,y,alpha=0)
+lam_ridge = ridge_cv.out$lambda.min
+ridge_pred = predict(ridgemod, newx = test_x, s = lam_ridge)
+ridge_MSE = mean((test_y - ridge_pred)^2)
+ridge_MSE
+```
+
+```{r}
+lassomod = glmnet(x,y,alpha = 1)
+lasso_cv.out = cv.glmnet(x,y,alpha = 1)
+lam_lasso = lasso_cv.out$lambda.min
+lasso_pred = predict(lassomod, newx = test_x, s = lam_lasso)
+lasso_MSE = mean((test_y - lasso_pred)^2)
+lasso_MSE
+```
+
+```{r}
+mod_pred = predict.lm(fit_cp,newdata = test)
+mod_mse = mean((test_y-mod_pred)^2)
+mod_mse
+```
+
+```{r}
+full_mod_pred = predict.lm(full_mod,newdata = test)
+full_mod_mse = mean((test_y-full_mod_pred)^2)
+full_mod_mse
+```
+
+## Question 4: Results
+
+Out of all the models, we can see that the lasso regression model has the lowest mean square error. Therefore, the lasso regression model predicts glucose better.
+```{r}
+lasso_coef = predict(lassomod, type = "coefficients", s = lam_lasso)
+lasso_coef
+```
+With the tuning parameter, pregnant was shrinked to 0. According to the lasso regression model, diastolic, triceps, insulin, bmi, diabetes, and age are significant variables in predicting glucose. 
+
+Holding all other units constant:
+-For every one unit increase in diastolic, glucose increases by .079 units. 
+-For every one unit increase in triceps, glucose increases by .013 units. 
+-For every one unit increase in insulin, glucose increases by .14 units. 
+-For every one unit increase in bmi, glucose increases by .32 units.
+-For every one unit increase in diabetes, glucose increases by 1.08 units.
+-For every one unit increase in age, glucose increases by .73 units.
+
+## Question 5: Summary
+
+The pima dataset is incomplete and contained some unexpected outliers. We removed the incomplete observations in order to avoid sending wrong signals when training our models. 
+
+The lasso regression model predicts glucose the best. Based on the results, diastolic, triceps, insulin, bmi, diabetes, and age are all significant variables in predicting glucose while pregnant variable was left out of the lasso regression model. 
+
+Older female Pima Indians tend to have higher levels of glucose. In addition, subjects with higher diabetes pedigree, body mass, insulin, and tricep skin folds, blood pressures tend to also have higher levels of glucose. 

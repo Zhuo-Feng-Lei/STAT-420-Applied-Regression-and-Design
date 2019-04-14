@@ -1,0 +1,88 @@
+---
+title: "Lei_Zhuo_STAT425_HW20"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/10/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+library(alr4)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1  
+```{r}
+data(ais)
+fit1 = lm(Bfat~1,data = ais)
+independent_vars1 = ~Ht+Wt+LBM+BMI+SSF
+add1(fit1,independent_vars1,test="F")
+fit1 = update(fit1,.~.+SSF)
+add1(fit1,independent_vars1,test="F")
+fit1 = update(fit1,.~.+LBM)
+add1(fit1,independent_vars1,test="F")
+fit1 = update(fit1,.~.+Wt)
+add1(fit1,independent_vars1,test="F")
+fit1 = update(fit1,.~.+Ht)
+add1(fit1,independent_vars1,test="F")
+```
+
+All F-values are less than 3 so the stopping rule is met. The final model includes SSF,LBM,Wt,and Ht. 
+
+## Question 2 
+```{r}
+fit2 = lm(Bfat~Ht+Wt+LBM+BMI+SSF,data = ais)
+drop1(fit2,test = "F")
+fit2 = update(fit2,.~.-BMI)
+drop1(fit2,test = "F")
+```
+
+Since all the F-values are atleast 3, the stopping rule is met. The final model includes Ht,Wt,LBM, and SSF.
+
+## Question 3
+```{r}
+winner.url = "https://www.stat.ufl.edu/~winner/data/"
+tmp.url = paste0(winner.url,"clinton1.dat")
+st = c(1,39,46,53,62,70,78,86,95,106,115)
+en = c(38,45,52,61,69,77,85,94,105,114,124)
+wds = diff(c(st,en[length(en)]))
+clinton = read.fwf(tmp.url,widths=wds,strip.white=T)
+colnames(clinton) = c("county","vote","age","savings","income","poverty","veterans","female","density","nursing","crime")
+plot(clinton)
+```
+
+## Question 3
+```{r}
+fit3 = lm(vote~1,data = clinton)
+ind_vars2 = ~age+savings+income+poverty+veterans+female+density+nursing+crime
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+poverty)
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+density)
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+female)
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+savings)
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+veterans)
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+nursing)
+add1(fit3,ind_vars2,test = "F")
+fit3 = update(fit3,.~.+income)
+add1(fit3,ind_vars2,test = "F")
+```
+
+Since the F-values are less than 3, the conditions for the stopping rule is met. The final model includes poverty,density,female,savings,veterans,nursing, and income.
+
+## Question 4 
+```{r}
+fit4 = lm(vote~age+savings+income+poverty+veterans+female+density+nursing+crime,data=clinton)
+drop1(fit4,test = "F")
+fit4 = update(fit4,.~.-age)
+drop1(fit4,test = "F")
+fit4 = update(fit4,.~.-crime)
+drop1(fit4,test = "F")
+```
+Since all F-values are above 3, the conditions for the stopping rule is met. The final model includes savings, income, poverty, veterans, female, density, and nursing.
+
+## Question 5
+The constant variance assumption is violated when the response variable includes the means of different sample sizes. The other variables we would need to find an estimator that satisfies the Gauss-Markov theorem is the variance, sample correlation, and the bias. 

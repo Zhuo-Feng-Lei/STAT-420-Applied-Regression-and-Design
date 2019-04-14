@@ -1,0 +1,77 @@
+---
+title: "Lei_Zhuo_STAT425_HW25"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/29/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(faraway)
+```
+
+## Question 1
+```{r}
+data(pvc)
+```
+
+```{r}
+#operator
+tapply(pvc$psize,pvc$operator,mean)
+tapply(pvc$psize,pvc$operator,sd)
+```
+
+```{r}
+#resin
+tapply(pvc$psize,pvc$resin,mean)
+tapply(pvc$psize,pvc$resin,sd)
+```
+
+## Question 2 
+```{r}
+#no interaction
+no_int_model = lm(psize~factor(resin)+factor(operator),data = pvc)
+summary(no_int_model)
+#with interaction
+int_model = lm(psize~factor(resin)*factor(operator),data = pvc)
+summary(int_model)
+```
+
+## Question 3
+```{r}
+anova(int_model)
+```
+Since the p-value is .7599, greater than alpha (0.05), interaction is not significant in predicting psize. Therefore, we should use the no interaction model to predict psize. 
+
+## Question 4
+```{r}
+par(mfrow=c(2,2))
+plot(no_int_model)
+```
+There is a slight positive trend in the residuals vs fitted plot, thus linearity and constance varaince is violated.
+Only some of the points on the normal q-q plot follows a straight line. Normality is not sastified.
+The trend in the scale-location plot shows a slighly downward trend. Thus constant variance is violated.
+According to the constant leverage plot, points 37,45, and 47 may be outliers. Further testing is needed to verify. 
+
+```{r}
+critval = qt(0.05/(2*nobs(no_int_model)), df=df.residual(no_int_model)-1, lower=FALSE)
+which(abs(rstudent(no_int_model)) > critval)
+```
+Based on studentized residuals and Bonferroni-adjusted critical value, point 45 is an outlier. 
+
+## Question 5
+```{r}
+t = TukeyHSD(aov(psize~factor(resin)+factor(operator),data=pvc))
+t
+```
+
+```{r}
+which(t$`factor(resin)`[,4]<=.05)
+```
+```{r}
+which(t$`factor(operator)`[,4]<=.05)
+```
+
+Resin 3-1,4-1,5-1,6-1,7-1,3-2,4-2,5-2,6-2,7-3,8-3,7-4,8-4,8-5,7-6,8-6,8-7 are significant because their p-values are less than alpha and their CI does not contain 0.
+
+Operators 3-1,3-2 are significant because their p-values are less than alpha and their CI does not contain 0. 

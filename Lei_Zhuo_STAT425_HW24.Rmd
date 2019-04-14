@@ -1,0 +1,55 @@
+---
+title: "Lei_Zhuo_STAT425_HW24"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/28/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+```{r}
+data = read.table("bacterial-soap.txt",col.names = c("BacterialCounts","Method"))
+data
+```
+
+```{r}
+#Part A
+tapply(data$BacterialCounts, data$Method, mean)
+tapply(data$BacterialCounts, data$Method, sd)
+```
+
+```{r}
+#Part B
+model = lm(BacterialCounts~factor(Method),data = data)
+anova(model)
+```
+P-value is .001111. Since the p-value is less than alpha, we reject the null hypothesis. There is evidence to conclude that the mean bacterial counts for all methods is not equal.
+
+```{r}
+#Part C
+par(mfrow=c(2,2))
+plot(model)
+```
+The residuls vs fitted plot shows a roughly flat trend so constant variance is satisfied. Linearity is also satisfied.
+Most points on the normal q-q plot follows a straight line. Normality is decently satisfied.
+The scale-location plot is roughly flat so constant variance is satisfied.
+Points 27,26,7 may be possible outliers according to the constant leverage plot. 
+```{r}
+#Part D
+critval = qt(0.05/(2*nobs(model)), df=df.residual(model)-1, lower=FALSE)
+which(abs(rstudent(model)) > critval)
+```
+There are no outliers since none exceeded the Bonferroni critical value.
+
+```{r}
+#Part E
+TukeyHSD(aov(BacterialCounts~factor(Method),data=data))
+```
+The pairs that are significantly different is AntibacterialSoap-AlcoholSpray, Soap-AlcoholSpray, and Water-AlcoholSpray. We know these 3 pairs are significant because their confidence intervals do not contain 0 and their p-values are lower than .05. 
+
+
+
+

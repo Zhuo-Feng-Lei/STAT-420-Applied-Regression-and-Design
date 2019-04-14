@@ -1,0 +1,83 @@
+---
+title: "Lei_Zhuo_STAT425_HW21"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/12/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(mfp)
+library(leaps)
+```
+
+## Question 0 
+```{r}
+data(bodyfat)
+smp_size = floor(0.5 * nrow(bodyfat))
+set.seed(425)
+train_ind = sample(seq_len(nrow(bodyfat)), size = smp_size)
+train = bodyfat[train_ind, ]
+test = bodyfat[-train_ind, ]
+```
+
+## Question 1
+```{r}
+#part a 
+fit1a = lm(brozek~.-siri-density,data=train) 
+summary(fit1a)
+```
+```{r}
+#part b
+x = model.matrix(brozek~.-1-siri-density,data=train)
+y = train$brozek
+bestmods = leaps(x,y,nbest=1,method = "Cp")
+bestmods
+bestmods$Cp[which.min(bestmods$Cp)]
+colnames(x)[which(bestmods$which[which.min(bestmods$Cp),], arr.ind = TRUE)]
+```
+
+```{r}
+#part c
+r_sq_mod = leaps(x,y,nbest=1,method = "adjr2")
+r_sq_mod
+r_sq_mod$adjr2[which.max(r_sq_mod$adjr2)]
+colnames(x)[which(r_sq_mod$which[which.max(r_sq_mod$adjr2), ], arr.ind = TRUE)]
+```
+
+```{r}
+#part d
+start = lm(brozek~1,data=train)
+forward_step = step(start,direction = "forward",scope = list(upper=fit1a,lower=start))
+summary(forward_step)
+```
+
+## Question 2
+```{r}
+fullmodpred = predict.lm(fit1a,newdata = test)
+full_mse = mean((test$brozek-fullmodpred)^2)
+full_mse
+```
+```{r}
+cpmod = lm(brozek~weight+height+neck+abdomen+biceps,data = train)
+Cpmodpred=predict.lm(cpmod,newdata=test)
+MSECpmod=mean((test$brozek-Cpmodpred)^2)
+MSECpmod
+```
+```{r}
+r_sq_mod = lm(brozek~age+weight+height+neck+abdomen+hip+thigh+biceps+forearm+wrist,data=train)
+r_sq_modpred = predict.lm(r_sq_mod,newdata = test)
+MSEr_sq_mod = mean((test$brozek-r_sq_modpred)^2)
+MSEr_sq_mod
+```
+```{r}
+step_mod = lm(brozek~abdomen + weight + biceps + neck + height, data = train)
+step_modpred = predict.lm(step_mod,newdata = test)
+MSE_step_mod = mean((test$brozek-step_modpred)^2)
+MSE_step_mod
+```
+
+The forward selection with the AIC criteron and the Cp model has the highest MSE. The full model has the lowest test MSE. 
+
+## Question 3 
+The full model has the the lowest test MSE. The model with the lowest test MSE predicts bodyfat the best. In this particular case, the full model was able to predict bodyfat the best. 

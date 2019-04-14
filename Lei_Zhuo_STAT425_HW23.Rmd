@@ -1,0 +1,57 @@
+---
+title: "Lei_Zhuo_STAT425_HW23"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/25/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+```
+
+## Question 1 
+```{r}
+#Part A
+data = read.csv("facebook_teach.csv")
+control = data[data$Trt==0,]
+treatment = data[data$Trt==1,]
+t.test(treatment$post_lrn,control$post_lrn,var.equal = T)
+```
+The difference in the sample mean score is 7.15009. The two-sided p value for the t-test is 0.01564.
+```{r}
+#Part B
+fit1b = lm(post_lrn~pre_lrn+Trt,data = data)
+summary(fit1b)
+```
+Conditioning on pre_lrn, facebook intervention will increase the post_lrn by 6.8385 units. The p-value of the corresponding test of significance of the regression coefficient is .0193. Since the p-value is less than .05 (our alpha), we know that treatment is a significant variable in predicting post learning achievement scores.
+
+```{r}
+#Part C
+fit1c = lm(post_lrn~pre_lrn+Trt+pre_lrn*Trt,data = data)
+summary(fit1c)
+```
+The p-value of pre_lrn:Trt is .0818. Since its greater than .05, we fail to reject the hypothesis of addictivity. There is no evidence of an interaction between treatment and the pre-treatment  achievement score in predicting post-treatment achievement scores.
+
+## Question 2
+
+```{r}
+data(shoes)
+
+results = c()
+assignments = matrix(0,1024,10)
+for (i in 1:1024){
+  assignments[i,] = as.numeric(intToBits(i))[1:10]
+}
+assignments = (assignments*2)-1
+
+for(i in 1:1024)
+  {
+  results[i] = t.test((shoes$A - shoes$B)*assignments[i,])$statistic
+  }
+
+t.observed = t.test(shoes$A - shoes$B)$statistic
+approx.pval = mean(abs(results) >= abs(t.observed))
+approx.pval
+```
+

@@ -1,0 +1,80 @@
+---
+title: "Lei_Zhuo_STAT425_HW16"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/25/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(alr4)
+```
+
+## Question 1 
+```{r}
+#Part A
+data(lakemary)
+fit1 = lm(Length~Age,data = lakemary)
+summary(fit1)
+```
+
+```{r}
+#Part B
+plot(lakemary$Age,lakemary$Length)
+abline(fit1)
+```
+
+```{r}
+#Part C
+plot(fit1, which = 1)
+```
+Based on the residuals vs fitted plot, a linear model does not seem to fit the data as there seems to be a quadratic trend.
+
+## Question 2 
+It is possible to perform a lack-of-fit test for this data even though the error variance is unknown because there are independent replications at each of the x values.
+
+## Question 3 
+```{r}
+fitgen1 = lm(Length~factor(Age),data = lakemary)
+fit1lof = anova(fit1,fitgen1)
+fit1lof
+```
+
+Part A: Sum of Squares for pure errors is 8812.7 and 3080.2 for lack of fit. 
+
+Part B: $\tilde{\sigma}^2 = \frac{8812.7}{72} = 122.398611111$
+
+Part C: Since the p-value is less than .05 (our alpha), we found evidence to reject the linear model. 
+
+## Question 4 
+```{r}
+#Part A
+data = read.csv("napa_marathon_fm2015.csv")
+fit4 = lm(Hours~Age,data = data)
+plot(fit4, which = 1)
+```
+Based on the residuals vs fitted diagnostic plot, the linear model does not seem to fit the data as there seems to be a quadratic trend.
+
+```{r}
+#Part B
+fitgen4 = lm(Hours~factor(Age),data = data)
+fit4lof = anova(fit4,fitgen4)
+fit4lof
+```
+```{r}
+fit4lof$`Sum of Sq`[2]
+```
+```{r}
+
+```
+
+Since the p-value is less than .05(our alpha), we reject the null hypothesis. We found evidence to reject the linear model. 
+
+## Question 5
+```{r}
+fit5 = lm(Hours~poly(Age,2,raw = T),data = data)
+fit5lof = anova(fit5,fitgen4)
+fit5lof
+```
+
+Since the p-value is greater than .05, we do not find evidence that the quadratic model does not fit the data.

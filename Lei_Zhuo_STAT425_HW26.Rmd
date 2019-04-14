@@ -1,0 +1,57 @@
+---
+title: "Lei_Zhuo_STAT425_HW26"
+author: "Zhuo Feng Lei (zlei5)"
+date: "4/1/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1
+```{r}
+data = read.csv("golf_driver (1).csv")
+data
+```
+```{r}
+#Part A
+
+#Driver
+tapply(data$totdist,data$club, mean)
+#Golfer
+tapply(data$totdist,data$golfer, mean)
+```
+
+```{r}
+#Part B
+model = lm(totdist~factor(club)+factor(golfer),data = data)
+anova(model)
+```
+
+The p-value for the F test studying driver effects is 0.01589. Since the p-value is less than alpha (.05), we reject the null hypothesis. There is evidence that drivers is significant in predicting total distance. 
+
+```{r}
+#Part C
+TukeyHSD(aov(totdist~factor(club)+factor(golfer),data = data))
+```
+The pairs of drivers that are significantly different are 4-2 and 4-3. Their p-value is less than alpha (.05) and their confidence intervals does not contain 0.
+
+The pairs of golfers that are significantly different are 3-1,4-1,6-1,3-2,4-2,6-2,4-3,5-3,6-3,6-4, and 6-5 for the same reasons as mentioned previously.
+
+```{r}
+#Part D
+anova(lm(totdist~factor(club),data = data))
+par(mfrow=c(2,2))
+plot(lm(totdist~factor(club),data = data))
+```
+
+Without the block, the p-value for the f-test studying the driver's effects is .8729. The p-value is greater than alpha, so we fail to reject the null hypothesis. Without the block, we conclude that driver is not significant in predicting total distance. 
+
+When not blocking  on golfer, the assumptions we violate is linearity (downward trend in residuals vs fitted plot), normality (many points on the normal q-q plot does not fall in a straight line), and constance variance (downward trend in residuals vs fitted plot and scale-location plot).
+
+```{r}
+#Part e
+TukeyHSD(aov(totdist~factor(club),data = data))
+```
+Unlike the results in part c, the results in part e shows that none of the driver pairs are signficantly different. All of the p-values are greater than alpha (.05) and all of the confidence intervals contain 0. 

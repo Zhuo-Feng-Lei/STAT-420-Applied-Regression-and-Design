@@ -1,0 +1,77 @@
+---
+title: "Lei_Zhuo_STAT425_HW18"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/1/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+```
+
+## Question 1
+```{r}
+data = read.csv("fishermen_mercury.csv")
+fit1 = lm(TotHg~fisherman+height+weight,data=data)
+summary(fit1)
+```
+```{r}
+par(mfrow=c(2,2))
+plot(fit1)
+```
+In the residuals vs fitted plot, there seems to be a slight downward trend, thus the data is not linearized. In addition, the points are not evenly spread so constant variance is violated.
+
+In the normal qqplot, some of the points doesn't fall on the straight line, hence normality is not satisfied.
+
+In the scale-location plot, there is an upward trend. This tells us that constant variance is violated.
+
+In the residuals vs leverage plot, there are no points behind the cook's distance contour lines. Hence, according to cook's distance, there are no apparent influential points. 
+
+## Question 2
+```{r}
+trans_fit1 = lm(TotHg^(2/5)~fisherman+height+weight,data=data)
+boxcox(trans_fit1)
+```
+Based on the box-cox plot, there is evidence that the transformation is appropriate since the lambda value is very close to 1 and 1 falls within the interval.
+
+```{r}
+par(mfrow=c(2,2))
+plot(trans_fit1)
+```
+Residuals vs fitted plot shows a roughly flat trend so linearity seems to be satisfied. The points aren't very evenly spread so constant variance is violated.
+
+In the normal qq plot, the points on both ends doesn't fall on the straight line so normality is not satisfied.
+
+In the scale-location plot, there is a roughly upward trend which indicates that constant variance is violated. 
+
+In the residuals vs leverage plot, none of the points are highly influential according to cook's distance.
+## Question 3 
+```{r}
+data2 = read.csv("napa_marathon_fm2015.csv")
+fit2 = lm(Hours~Age,data = data2)
+par(mfrow=c(2,2))
+plot(fit2)
+```
+In the residuals vs fitted plot, there seems to be a slight parabolic trend. This indicates that the data is not very linearized. However, the points are spread equally so constant variance does not seem to be violated.
+
+In the normal qq plot, the points on both ends fall away from the line. This tells us that normality is not very satistified.
+
+In the scale-location plot, the trend appears to be roughly flat. This indicates that constant variance is not violated.
+
+In the residuals vs leverage plot, we do not see the cook's distance contour lines. According to cook's distance, there doesn't seem to be any highly influential points.
+
+## Question 4
+```{r}
+trans_fit2 = lm(sqrt(Hours)~Age,data = data2)
+boxcox(trans_fit2)
+```
+Based on the box-cox plot, there is evidence that the transformation is appropriate since the lambda value is very close to 1 and 1 is within the lambda interval.
+
+## Question 5
+
+$$\lim_{\lambda\to0}\frac{\frac{d}{d\lambda}(y^\lambda-1)}{\frac{d}{d\lambda}\lambda} = \lim_{\lambda\to0}\frac{y^\lambda ln(y)}{1}$$
+
+$$ = \frac{y^0*ln(y)}{1} = ln(y)$$
+
+$$\lim_{\lambda\to0}\frac{y^\lambda-1}{\lambda}\to ln(y)$$

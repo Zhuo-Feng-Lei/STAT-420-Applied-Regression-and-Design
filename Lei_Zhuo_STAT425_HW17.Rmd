@@ -1,0 +1,48 @@
+---
+title: "Lei_Zhuo_STAT425_HW17"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/27/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1 
+```{r}
+#Transform using log
+trans_fit1 = lm(log(Volume)~log(Girth)+log(Height),data = trees)
+summary(trans_fit1)
+```
+
+## Question 2
+```{r}
+par(mfrow=c(2,2))
+plot(trans_fit1)
+```
+In the residuals vs fitted plot, the points roughly follow a straight line. Therefore the transformed model is linearized. The points are not equally spreaded, so constant variance is violated. 
+
+In the normal Q-Q plot, the points roughly follow the straight line. Hence, normality is decently satistified.
+
+In the scale-location plot, the points do not follow a straight line. Therefore, constant variance is violated.
+
+In the residuals vs leverage plot, no points are behind the cook's distance contour lines. Therefore, there are no apparent influential points according to cook's distance. There also doesn't seem to be any outliers. 
+
+## Question 3 
+```{r}
+confint(trans_fit1)
+```
+Each CI contain the theoretical values suggested by the relationship in Equation 1.
+
+## Question 4 
+```{r}
+pred=predict(trans_fit1,data.frame(Girth=10.9,Height = 75),interval = "predict",level = .95)
+pred
+```
+
+## Question 5
+```{r}
+exp(pred)
+```
+

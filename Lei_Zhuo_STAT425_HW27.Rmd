@@ -1,0 +1,83 @@
+---
+title: "Lei_Zhuo_STAT425_HW27"
+author: "Zhuo Feng Lei (zlei5)"
+date: "4/3/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+library(lmtest)
+```
+
+```{r}
+st = c(3,11,20)
+en = c(8,17,27)
+wds = diff(c(st, en[length(en)]))
+data = read.fwf("muscle2.txt", widths = wds, strip.white = T)
+colnames(data)=c("Body_Mass","Work_Level","Heat_Output")
+data
+```
+```{r}
+fit1 = lm(Heat_Output~Body_Mass+Work_Level,data = data)
+fit2 = lm(Heat_Output~Body_Mass*Work_Level,data = data)
+anova(fit1,fit2)
+```
+Since the p-value is greater than alpha, we can conclude that the model without interaction fits better.
+```{r}
+fit3 = lm(Heat_Output~Body_Mass,data = data)
+anova(fit3,fit1)
+```
+Since the p-value is less than alpha, we reject the null hypothesis. It seems like the full model fits better than the reduced model.
+```{r}
+fit4 = lm(Heat_Output~Work_Level,data = data)
+anova(fit4,fit1)
+```
+Since the p-value is less than alpha, we reject the null hypothesis. It seems like the full model fits better than the reduced model.
+
+```{r}
+summary(fit1)
+```
+The adjusted r-square value is .4624. This means that the current model can explain 46.24% of the variance in the response variable. Ideally, we want this to be as high as possible. We also have to look at the diagnostic plots to see if any conditions are violated.
+
+```{r}
+par(mfrow=c(2,2))
+plot(fit1)
+shapiro.test(fit1$residuals)
+bptest(fit1)
+```
+The residuals vs fitted plot display a trend line that is roughly flat. Thus, linearity seems to be satisfied.
+
+Most of the points on the normal Q-Q plot seems to fall on the straight line. Thus, normality is satisfied. In addition, the p-value from the shapiro wilk's test is .446. Since the p-valule is greater than alpha, we fail to reject the null hypothesis that the data follows a normal distribution.
+
+The scale-location plot shows a positive trend. Therefore, constant variance is violated. The p-value from the bptest is less than alpha, thus we reject the hypothesis and conclude that constant variance is violated.
+
+The residuals vs leverage plot shows no points beyond the cook's distance contour lines. Therefore, there are no highly influential points.
+
+We want a model that does not violate the constant variance assumption. Thus, I will try to correct it using transformations.
+```{r}
+bc = boxcox(fit1,lambda = seq(-6,4,1/2))
+lambda_best=bc$x[which.max(bc$y)]
+lambda_best
+```
+
+```{r}
+fit_trans = lm(Heat_Output^lambda_best~Body_Mass+Work_Level,data = data)
+par(mfrow=c(2,2))
+plot(fit_trans)
+bptest(fit_trans)
+shapiro.test(fit_trans$residuals)
+```
+The residuals vs fitted plot display a trend line that is roughly flat. Thus, linearity seems to be satisfied.
+
+Most of the points on the normal Q-Q plot seems to fall on the straight line. Thus, normality is satisfied. In addition, the p-value from the shapiro wilk's test is .3394. Since the p-valule is greater than alpha, we fail to reject the null hypothesis that the data follows a normal distribution.
+
+The scale-location plot shows a roughly flat trend. Therefore, constant variance is not violated. The p-value from the bp test is greater than alpha so we fail to reject the null hypothesis that constant variance is satistifed.
+
+The residuals vs leverage plot shows no points beyond the cook's distance contour lines. Therefore, there are no highly influential points.
+
+```{r}
+summary(fit_trans)
+```
+Compared to the full model, the transformed model contains a slighly larger adjusted r-square value. The transformed model can explain 48.61% of the variance in the response variable. In addition, the transform model satisfies all GM conditions. Therefore, we should use the transformed model instead of the full model to predict heat output.

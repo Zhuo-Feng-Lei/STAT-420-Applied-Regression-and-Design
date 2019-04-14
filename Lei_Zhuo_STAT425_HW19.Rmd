@@ -1,0 +1,122 @@
+---
+title: "Lei_Zhuo_STAT425_HW19"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/4/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(alr4)
+```
+
+## Question 1
+
+```{r}
+#Part A
+data(lakemary)
+fit = lm(Length~Age+I(Age^2),data = lakemary)
+summary(fit)
+```
+```{r}
+#Part B
+plot(lakemary$Age,lakemary$Length)
+x.grid <- seq(min(lakemary$Age), max(lakemary$Age), len=100)
+lines(x.grid, predict(fit, data.frame(Age=x.grid)), lty=3)
+```
+```{r}
+#Part C
+par(mfrow=c(2,2))
+plot(fit)
+```
+The points in the residuals vs fitted plot shows a roughly flat trend so linearity is satisfied. 
+
+Constant variance is not violated since the trend in scale-location plot is roughly flat.
+
+The normal qq plot shows points in a a relative straight line so normality is decently satisified.
+
+According to cook's distance, there are no highly influential points in the residuals vs leverage plot.
+
+## Question 2
+```{r}
+#Part A
+fitgen = lm(Length~factor(Age),data = lakemary)
+fitlof = anova(fit,fitgen)
+fitlof
+```
+
+Sum of squares for pure error is 8812.7 and sum of squares for lack-of-fit is 108.01.
+
+Part B: Since the p-value is greater than our alpha (.05), we failed to find evidence to reject the quadratic model.
+
+## Question 3
+```{r}
+hybrid = read.csv("hybrid_reg.csv")
+fit1=lm(msrp~mpgmpge+accelrate,data=hybrid)
+summary(fit1)
+par(mfrow=c(2,2))
+plot(fit1)
+```
+
+In the residuals vs fitted plot, there is a parabolic trend. This indicates that linearity is not satisfied. 
+
+In the normal qqplot, the points on one end deviate from the straight line. Normality is partially satisfied.
+
+In the scale-location plot, the trend is roughly flat. Therefore,constant variance is not violated.
+
+According to cook's distance, there is no highly influential points in the residuals vs leverage plot.
+```{r}
+fit2=lm(msrp~mpgmpge*accelrate,data=hybrid)
+summary(fit2)
+par(mfrow=c(2,2))
+plot(fit2)
+```
+
+In the residuals vs fitted plot, there is a parabolic trend. This means that linearity is not satifised.
+
+In the normal qq plot, some points don't fall on the straight line. Normality is partially satisfied.
+
+In the scale-location plot, the trendline is roughly flat. Therefore, constant variance is not violated.
+
+According to cook's distance, there are no highly influential points in the residuals vs leverage plot.
+
+Neither of the models seem to be very appropriate for the hybrid's data.
+## Question 4
+```{r}
+fit3=lm(msrp~mpgmpge*poly(accelrate,2,raw=T),data=hybrid)
+summary(fit3)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(fit3)
+```
+In the residuals vs fitted plot, the trend is roughly flat thus linearity is satisfied.
+
+In the normal qq plot, most of the points fall on the straigh line so most of the data satisfies normality.
+
+In the scale-location plot, the trend is roughly flat so constant variance is not violated.
+
+According to cook's distance, there are no highly influential points since no points resides past the contour lines in the residuals vs leverage plot. 
+## Question 5
+```{r}
+anova(fit1,fit2)
+```
+Null Hypothesis is that model 1 suffices in predicting msrp. Alternative hypothesis is that model 2 fits better.
+
+The degrees of freedom is 1. 
+
+The p-value is 3.85e-06 which is less than .05. Thus, we reject the null hypothesis. There is evidence that model 2 fits better than model 1 when predicting msrp.
+
+
+```{r}
+anova(fit2,fit3)
+```
+Null Hypothesis is that model 2 suffices in predicting msrp. Alternative hypothesis is that model 3 fits better.
+
+The degrees of freedom is 2. 
+
+The p-value is 0.005064 which is less than .05. Thus, we reject the null hypothesis. There is evidence that model 3 fits better when predicting msrp.
+
+We should use model 3 to predict msrp. When compared, model 2 fits better than model 1. However, model 3 fits better than model 2. Thus model 3 is best model to predict msrp out of the 3 models.
+

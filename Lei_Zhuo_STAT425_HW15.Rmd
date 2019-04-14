@@ -1,0 +1,82 @@
+---
+title: "Lei_Zhuo_STAT425_HW15"
+author: "Zhuo Feng Lei (zlei5)"
+date: "2/22/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(alr4)
+library(lmtest)
+```
+
+## Question 1 
+```{r}
+data(jevons)
+fit1 = lm(Age~Weight,data = jevons)
+summary(fit1)
+confint(fit1,level = .95)
+```
+
+## Question 2 
+```{r}
+#Part A/B
+fit2 = lm(Age~Weight,weights = n ,data = jevons)
+summary(fit2)
+confint(fit2,level = .95)
+```
+```{r}
+#Part C
+w_2 = diag(fit2$weights)
+w_2
+solve(w_2)
+```
+
+## Question 3 
+```{r}
+#Part A/B
+fit3 = lm(Age~Weight,weights = n/SD^2,data = jevons)
+summary(fit3)
+confint(fit3)
+```
+```{r}
+#Part C
+w_3 = diag(fit3$weights)
+w_3
+solve(w_3)
+```
+
+## Question 4 
+```{r}
+#Part A
+data = read.csv("lpga2009.csv")
+fit4a = lm(prize~percentile,data = data)
+bptest(fit4a)
+```
+
+There is evidence to reject the null hypothesis of constant error variance.
+
+```{r}
+#Part B
+fit4b = lm(log(prize)~percentile,data = data)
+bptest(fit4b)
+```
+There is evidence to reject the null hypothesis of constant error variance.
+
+## Question 5 
+The linear model does not satisfy the Gauss-Markov conditions because $var(\epsilon)\neq\sigma^2 I$ since $\sum$ is a symmetric and positive invertible matrix. We need $\sum$ to be an identity matrix so we have to transform the model by C. 
+
+First, we multiply both sides by C:
+
+$$Cy = CX\beta+C\epsilon$$
+
+$z = Cy, M = CX, \delta = C\epsilon$:
+
+$$z = M\beta+\delta$$
+
+where $E(\delta)=0$ and 
+
+$$var(\delta)=Cvar(\epsilon)C^T = \sigma^2CC^{-1}C^{-T}C^T = \sigma^2I$$
+
+Thus, the Gauss-Markov conditions are met after transformation.

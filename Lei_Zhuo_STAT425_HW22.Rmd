@@ -1,0 +1,74 @@
+---
+title: "Lei_Zhuo_STAT425_HW22"
+author: "Zhuo Feng Lei (zlei5)"
+date: "3/13/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(mfp)
+library(glmnet)
+```
+
+## Question 0 
+```{r}
+data(bodyfat)
+bodyfat = bodyfat[,-(3:4)]
+smp_size = floor(0.5 * nrow(bodyfat))
+set.seed(425)
+train_ind = sample(seq_len(nrow(bodyfat)), size = smp_size)
+train = bodyfat[train_ind, ]
+test = bodyfat[-train_ind, ]
+```
+
+## Question 1 
+```{r}
+#Ridge Regression
+xtrain = as.matrix(train[,-2])
+ytrain = as.matrix(train[,2])
+xtest = as.matrix(test[,-2])
+ytest = as.matrix(test[,2])
+ridge_mod = glmnet(xtrain,ytrain,alpha=0)
+ridge_cv_out = cv.glmnet(xtrain, ytrain, alpha=0)
+best_lambda_ridge = ridge_cv_out$lambda.min
+best_lambda_ridge
+```
+
+```{r}
+#lasso 
+lasso_mod = glmnet(xtrain,ytrain,alpha=1)
+lasso_cv_out = cv.glmnet(xtrain,ytrain,alpha=1)
+best_lambda_lasso = lasso_cv_out$lambda.min
+best_lambda_lasso
+```
+
+We fit the model using our training data. Then, we use cross-validation to determine the appropriate lambda. We select the lambda with the lowest value because it gives the best penalization. The shrinkage penalty for lasso is $\lambda \sum|\beta_j|$ and the shrinkage penalty for ridge regression is $\lambda \sum|\beta_{j}^2|$.
+
+## Question 2
+```{r}
+#ridge MSE
+ridge_pred = predict(ridge_mod, s=best_lambda_ridge, newx = xtest)
+MSE_ridge = mean((ytest-ridge_pred)^2)
+MSE_ridge
+```
+
+```{r}
+#lasso MSE
+lasso_pred = predict(lasso_mod, s=best_lambda_lasso, newx = xtest)
+MSE_lasso = mean((ytest-lasso_pred)^2)
+MSE_lasso
+```
+
+## Question 3
+```{r}
+lasso_coef = predict(lasso_mod, type = 'coefficients', s = best_lambda_lasso)[1:15,]
+lasso_coef[lasso_coef != 0]
+```
+```{r}
+fit =lm(brozek~age+neck+abdomen+hip+ankle+biceps+forearm+wrist,data=test)
+summary(fit)
+```
+
+
+The lasso model has the lowest MSE when compared with the ridge regression model. The lasso model model with lambda chosen by cross-validation contains only 8 variables. These 8 variables are shown above. The model is significant based on F test p value and individual t test’s p values. It explains 72.21% of variance in the response. Therefore, it should work decently in predicting bodyfat percentage.
