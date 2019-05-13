@@ -1,0 +1,61 @@
+---
+title: "Lei_Zhuo_STAT428_HW31"
+author: "Zhuo Feng Lei (zlei5)"
+date: "4/24/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(faraway)
+```
+
+## Question 0
+```{r}
+data(pima)
+pima[,2:8][pima[,2:8]==0]<-NA
+summary(pima)
+```
+
+## Question 1
+```{r}
+pima = na.omit(pima)
+fit = glm(test~pregnant+glucose+diastolic+triceps+insulin+bmi+diabetes+age,family = binomial,data=pima)
+summary(fit)
+```
+The variables that were significant at alpha=.05 is glucose,bmi, and diabetes since their respective p-values are lower than alpha.
+
+## Question 2
+```{r}
+fit2 = step(fit,direction = "backward",trace = F)
+summary(fit2)
+```
+
+## Question 3
+
+For every one unit increase in pregnant, the log odds of test=1 vs test = 0 increases by 0.083953.
+For every one unit increase in glucose, the log odds of test=1 vs test = 0 increases by 0.036458.
+For every one unit increase in bmi, the log odds of test=1 vs test = 0 increases by 0.078139.
+For every one unit increase in diabetes, the log odds of test=1 vs test = 0 increases by 1.150913.
+For every one unit increase in age, the log odds of test=1 vs test = 0 increases by 0.034360.
+
+## Question 4
+```{r}
+table(predicted = fitted(fit2) > 0.5, actual = pima$test)
+```
+```{r}
+(232+75)/nrow(pima)
+```
+78.32% of the data were correctly predicted.
+
+## Question 5
+```{r}
+#those who truly did
+75/(75+55)
+```
+57.69% of those who truly did were predicted correctly.
+```{r}
+#those who didn't
+232/(232+30)
+```
+88.55% of those who truly didn't have diabetes were predicted correctly.

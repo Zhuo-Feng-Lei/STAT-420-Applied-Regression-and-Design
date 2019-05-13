@@ -1,0 +1,64 @@
+---
+title: "Lei_Zhuo_STAT428_HW32"
+author: "Zhuo Feng Lei (zlei5)"
+date: "4/28/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Question 1a
+```{r}
+library(faraway)
+data(aflatoxin)
+```
+
+```{r}
+fit1 = glm(cbind(total-tumor,tumor)~dose,family = binomial(link = "logit"),data = aflatoxin)
+summary(fit1)
+fit1_trans = glm(cbind(total-tumor,tumor)~log(dose+1),family = binomial(link = "logit"),data = aflatoxin)
+summary(fit1_trans)
+```
+```{r}
+fit2 = glm(cbind(total-tumor,tumor)~dose,family = binomial(link = "probit"),data = aflatoxin)
+summary(fit2)
+fit2_trans = glm(cbind(total-tumor,tumor)~log(dose+1),family = binomial(link = "probit"),data = aflatoxin)
+summary(fit2_trans)
+```
+
+```{r}
+fit3 = glm(cbind(total-tumor,tumor)~dose,data=aflatoxin,family="binomial"(link="cloglog"))
+summary(fit3)
+fit3_trans = glm(cbind(total-tumor,tumor)~log(dose+1),data=aflatoxin,family="binomial"(link="cloglog"))
+summary(fit3_trans)
+```
+The log(dose+1) is not an appropriate transformation. Models with the transformation have higher AIC and residual deviance values when compared to the models without the transformation.
+
+## Question 1b
+
+The untransformed model with the probit link has the lowest residual deviance value out of all the models. Therefore, that is my best model.
+
+## Question 1c
+```{r}
+coef(fit1)
+x = 3.03603648/0.09008878
+x
+```
+$$.5 = \frac{1}{1+e^{-X^TB}}$$
+$$ e^{-X^TB}=1$$
+$$-X^TB=log(1)$$
+$$X = -B_0/B $$
+
+## Question 1d
+```{r}
+#transformed model with probit link is our best model
+newdata = data.frame(dose=c(25))
+predict(fit2,newdata,se.fit = T)
+```
+```{r}
+0.4378986-(1.96*0.1682523)
+0.4378986+(1.96*0.1682523)
+```
+

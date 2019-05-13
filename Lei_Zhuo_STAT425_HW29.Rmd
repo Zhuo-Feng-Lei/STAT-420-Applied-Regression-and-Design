@@ -1,0 +1,78 @@
+---
+title: "Lei_Zhuo_STAT425_HW29"
+author: "Zhuo Feng Lei (zlei5)"
+date: "4/15/2019"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(faraway)
+library(lme4)
+```
+
+## Question 1 
+```{r}
+data(denim)
+```
+
+```{r}
+#Part A
+plot(denim$supplier,denim$waste)
+```
+Supplier 1 and 2 contains many outliers. Supplier 5 has one outlier. Supplier 1 creates the least amount of waste compare to other suppliers. Supplier 5 seems to create the most waste on average. Supplier 5 also have a very large spread while the other suppliers have smaller spreads.
+
+
+```{r}
+#Part B
+fit1 = lm(waste~supplier,data = denim)
+anova(fit1)
+```
+Since the p-value is greater than alpha(.05), we fail to reject the null hypothesis. There is not enough evidence to show that supplier is significant.
+```{r}
+#Part C
+par(mfrow=c(2,2))
+plot(fit1)
+#searching for outliers
+critval = qt(0.05/(2*nobs(fit1)), df=df.residual(fit1)-1, lower=FALSE)
+which(abs(rstudent(fit1)) > critval)
+```
+
+The residuals vs fitted plot shows a roughly flat trend so linearity is satisfied. Most points on the normal qq plot follows the straight line so normality is satisfied. Scale location plot is roughly flat so constant variance is satisfied. There are no points past the cook's distance contour lines in the residuals vs leverage plot so there are no highly influential points according to cook's distance. However, points 82 and 87 may be outliers and further testing are needed to find out.
+
+```{r}
+#removing outliers
+denim1 = denim[-c(82,87),]
+```
+
+```{r}
+#Part D
+fit2 = lmer(waste~(1|supplier),data = denim1)
+summary(fit2)
+plot(fit2)
+```
+
+```{r}
+#Part E
+5.718/(5.718+37.292)
+```
+
+```{r}
+#Part F
+nullmod = lm(waste~1,data = denim1)
+llrts = as.numeric(2 * (logLik(fit2) - logLik(nullmod)))
+llrts
+lrstats = numeric(10000)
+for (i in 1:10000){
+  y = unlist(simulate(nullmod))
+  nullsim = lm(y~1)
+  altsim = lmer(y~(1|supplier),data = denim1)
+  lrstats[i] = as.numeric(2 * (logLik(altsim) - logLik(nullsim)))
+}
+pval = mean(lrstats >= llrts)
+pval
+
+se.pval = sqrt(pval*(1-pval)/10000)
+se.pval
+```
+Our approximate p-value is `r pval` which is less than our alpha. We reject the null hypothesis and conclude that there is evidence to show that the true value of the variance component for supplier is significant.
